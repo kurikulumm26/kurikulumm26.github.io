@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPI Matematika - Bilangan Bulat - SMP Negeri 1 Sukorame</title>
+  <style>
+    /* RESET & BASE STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: url('bg-ruang-kelas.jpg') center/cover no-repeat fixed #f0f9ff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #1e293b;
+    }
+
+    /* OVERLAY BACKGROUND */
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(240, 249, 255, 0.85);
+      z-index: 1;
+    }
+
+    /* MAIN CONTAINER 16:9 NO SCROLL */
+    #stage-16-9 {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      max-width: 133.33vh; /* 16:9 aspect ratio constraint */
+      height: 56.25vw;
+      max-height: 100vh;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      font-size: calc(15px * var(--font-scale, 1.0));
+      display: flex;
+      flex-direction: column;
+      padding: clamp(10px, 1.8vh, 18px);
+    }
+
+    /* HEADER & NAVBAR */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 10%;
+      min-height: 48px;
+      margin-bottom: 8px;
+    }
+
+    .brand-capsule {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 6px 16px;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 2px solid #e2e8f0;
+    }
+
+    .school-logo {
+      height: clamp(38px, 5.5vh, 52px);
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-text h1 {
+      font-size: clamp(13px, 1.8vh, 16px);
+      color: #0f172a;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .brand-text p {
+      font-size: clamp(10px, 1.3vh, 12px);
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-icon {
+      width: clamp(36px, 4.8vh, 44px);
+      height: clamp(36px, 4.8vh, 44px);
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      font-size: clamp(16px, 2vh, 20px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .btn-icon:hover {
+      transform: scale(1.08);
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .btn-nav-main {
+      padding: 6px 16px;
+      border-radius: 50px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      font-size: clamp(12px, 1.6vh, 14px);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav-main:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    /* PAGE VIEW CONTAINERS */
+    .page-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 90%;
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .page-view.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* PAGE TITLE BAR */
+    .page-title-badge {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      color: white;
+      padding: 6px 24px;
+      border-radius: 50px;
+      font-size: clamp(15px, 2.2vh, 20px);
+      font-weight: 800;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* PAGE 1: COVER */
+    .cover-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    .main-title {
+      font-size: clamp(2.4rem, 5.8vw, 4.5rem);
+      font-weight: 900;
+      color: #1e3a8a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      text-shadow: 
+        3px 3px 0 #fff, 
+        -3px -3px 0 #fff, 
+        3px -3px 0 #fff, 
+        -3px 3px 0 #fff,
+        0px 6px 15px rgba(30, 58, 138, 0.3);
+      margin-bottom: 8px;
+    }
+
+    .sub-title {
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-weight: 800;
+      color: #d97706;
+      background: #fef3c7;
+      padding: 4px 20px;
+      border-radius: 30px;
+      border: 2px solid #f59e0b;
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+
+    .btn-start {
+      width: clamp(70px, 9vh, 90px);
+      height: clamp(70px, 9vh, 90px);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border: 4px solid #ffffff;
+      color: white;
+      font-size: clamp(28px, 4vh, 40px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulseGlow 1.8s infinite;
+      transition: transform 0.2s ease;
+      margin-bottom: 12px;
+    }
+
+    .btn-start:hover {
+      transform: scale(1.12);
+    }
+
+    .start-label {
+      font-size: clamp(18px, 2.8vh, 24px);
+      font-weight: 800;
+      color: #15803d;
+      letter-spacing: 1px;
+    }
+
+    .cover-footer {
+      position: absolute;
+      bottom: 6px;
+      font-size: clamp(11px, 1.5vh, 14px);
+      font-weight: 700;
+      color: #475569;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 16px;
+      border-radius: 20px;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    /* PAGE 2: DASHBOARD MENU */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 1.8vh, 18px);
+      width: 95%;
+      max-width: 1000px;
+    }
+
+    .menu-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      border-color: #3b82f6;
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15);
+      background: #f8fafc;
+    }
+
+    .icon-box {
+      width: clamp(54px, 7.5vh, 72px);
+      height: clamp(54px, 7.5vh, 72px);
+      border-radius: 18px;
+      background: #eff6ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(28px, 4vh, 38px);
+      margin-bottom: 8px;
+    }
+
+    .menu-card h3 {
+      font-size: clamp(14px, 1.8vh, 17px);
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .menu-card p {
+      font-size: clamp(11px, 1.4vh, 13px);
+      color: #64748b;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    /* PAGE 3: TUJUAN PEMBELAJARAN */
+    .tp-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px 32px;
+      width: 90%;
+      max-width: 850px;
+      border: 3px solid #3b82f6;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    }
+
+    .tp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: clamp(13.5px, 1.8vh, 16px);
+      font-weight: 600;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    .tp-icon {
+      background: #dbeafe;
+      color: #2563eb;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    /* PAGE 4: MATERI INTI */
+    .materi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 95%;
+      height: 82%;
+    }
+
+    .materi-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 12px 16px;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .materi-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .materi-badge {
+      background: #3b82f6;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .materi-title {
+      font-size: clamp(14px, 1.8vh, 17px);
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .materi-body {
+      font-size: clamp(12px, 1.55vh, 14px);
+      font-weight: 600;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .materi-example {
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+      font-size: clamp(11.5px, 1.45vh, 13.5px);
+      font-weight: 700;
+      color: #1e3a8a;
+      border-left: 4px solid #3b82f6;
+    }
+
+    /* PAGE 5: SIMULASI / INTERAKTIF */
+    .sim-container {
+      width: 98%;
+      height: 85%;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 2px solid #cbd5e1;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .svg-canvas {
+      width: 100%;
+      height: clamp(220px, 34vh, 320px);
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .sim-controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 12px;
+    }
+
+    .sim-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 800;
+      font-size: clamp(13px, 1.6vh, 15px);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sim-btn-blue { background: #3b82f6; color: white; }
+    .sim-btn-green { background: #22c55e; color: white; }
+    .sim-btn-red { background: #ef4444; color: white; }
+    .sim-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .sim-feedback {
+      font-size: clamp(14px, 1.8vh, 17px);
+      font-weight: 800;
+      color: #1e293b;
+      text-align: center;
+    }
+
+    /* PAGE 6: EVALUASI MULTI-FORMAT */
+    .eval-stage {
+      width: 95%;
+      height: 85%;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 16px;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .eval-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    .eval-title {
+      font-size: clamp(14px, 1.8vh, 17px);
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+
+    .eval-score-badge {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: clamp(12px, 1.5vh, 14px);
+    }
+
+    /* QUIZ OPTION BUTTONS */
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quiz-btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      font-size: clamp(12.5px, 1.6vh, 15px);
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-btn:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    /* MATCHING SVG AREA */
+    .matching-container {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      height: 200px;
+      width: 100%;
+    }
+
+    .match-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 42%;
+      z-index: 2;
+    }
+
+    .match-card {
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: clamp(11.5px, 1.5vh, 13.5px);
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .match-card.selected {
+      border-color: #3b82f6;
+      background: #dbeafe;
+    }
+
+    .match-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* REKAP RESULT */
+    .result-box {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .trophy-icon {
+      font-size: clamp(50px, 8vh, 70px);
+    }
+
+    .final-score {
+      font-size: clamp(36px, 6vh, 52px);
+      font-weight: 900;
+      color: #16a34a;
+    }
+
+    /* PAGE 7: PROFIL GURU */
+    .profile-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 90%;
+      max-width: 800px;
+      border: 3px solid #cbd5e1;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .profile-img {
+      width: clamp(120px, 17vh, 160px);
+      height: clamp(120px, 17vh, 160px);
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #3b82f6;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .profile-info h2 {
+      font-size: clamp(18px, 2.5vh, 23px);
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .profile-info h4 {
+      font-size: clamp(13px, 1.7vh, 16px);
+      color: #2563eb;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .profile-quote {
+      font-size: clamp(12px, 1.5vh, 14px);
+      font-style: italic;
+      color: #475569;
+      background: #f8fafc;
+      padding: 8px 14px;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+    }
+
+    /* MODAL POPUP (FAKTA MENARIK) */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 20px;
+      padding: 20px 28px;
+      width: 85%;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      border: 3px solid #3b82f6;
+    }
+
+    .modal-box h3 {
+      font-size: clamp(16px, 2.2vh, 20px);
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    .modal-box p {
+      font-size: clamp(12.5px, 1.6vh, 15px);
+      color: #334155;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .btn-close-modal {
+      padding: 6px 20px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-overlay"></div>
+
+  <div id="stage-16-9">
+    <!-- HEADER -->
+    <header>
+      <div class="brand-capsule">
+        <img src="logo.png" alt="Logo Sekolah" class="school-logo" onerror="this.src='https://via.placeholder.com/60?text=LOGO'">
+        <div class="brand-text">
+          <h1 id="header-school">SMP NEGERI 1 SUKORAME</h1>
+          <p id="header-subject">Matematika — Fase D (Kelas VII)</p>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <button class="btn-nav-main" id="btn-home" onclick="navTo('page-menu')" style="display:none;">
+          🏠 Menu
+        </button>
+        <button class="btn-icon" onclick="toggleAudio()" id="btn-audio" title="Suara ON/OFF">🔊</button>
+        <button class="btn-icon" onclick="adjustZoom(0.05)" title="Perbesar">A+</button>
+        <button class="btn-icon" onclick="adjustZoom(-0.05)" title="Perkecil">A-</button>
+      </div>
+    </header>
+
+    <!-- PAGE 1: COVER -->
+    <div id="page-cover" class="page-view active">
+      <div class="cover-content">
+        <div class="sub-title">MATEMATIKA FASE D — KELAS VII</div>
+        <h1 class="main-title">BILANGAN BULAT</h1>
+        <p style="font-size: clamp(14px, 2vh, 18px); font-weight:700; color:#475569; margin-bottom: 20px;">
+          Membandingkan & Mengurutkan Bilangan Bulat
+        </p>
+
+        <button class="btn-start" onclick="playSfx('start'); navTo('page-menu')">▶</button>
+        <div class="start-label">MULAI BELAJAR</div>
+
+        <div class="cover-footer">
+          Disusun oleh: <strong>Nurul Komariyah, S.Pd</strong> — SMP Negeri 1 Sukorame
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: MENU UTAMA -->
+    <div id="page-menu" class="page-view">
+      <div class="page-title-badge">📌 MENU UTAMA PEMBELAJARAN</div>
+      <div class="menu-grid">
+        <div class="menu-card" onclick="navTo('page-tp')">
+          <div class="icon-box">🎯</div>
+          <h3>Tujuan Belajar</h3>
+          <p>Indikator & Capaian Pembelajaran</p>
+        </div>
+        <div class="menu-card" onclick="navTo('page-materi')">
+          <div class="icon-box">📖</div>
+          <h3>Materi Inti</h3>
+          <p>Konsep Membandingkan Bilangan Bulat</p>
+        </div>
+        <div class="menu-card" onclick="navTo('page-simulasi')">
+          <div class="icon-box">🕹️</div>
+          <h3>Simulasi Garis Bilangan</h3>
+          <p>Laboratorium Virtual Interaktif</p>
+        </div>
+        <div class="menu-card" onclick="navTo('page-evaluasi')">
+          <div class="icon-box">📝</div>
+          <h3>Evaluasi Interaktif</h3>
+          <p>Uji Pemahaman Multi-Format (100 Poin)</p>
+        </div>
+        <div class="menu-card" onclick="openModal()">
+          <div class="icon-box">💡</div>
+          <h3>Fakta Menarik</h3>
+          <p>Aplikasi Bilangan Bulat di Dunia Nyata</p>
+        </div>
+        <div class="menu-card" onclick="navTo('page-profil')">
+          <div class="icon-box">👨‍🏫</div>
+          <h3>Profil Guru</h3>
+          <p>Pengembang Media Pembelajaran</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: TUJUAN PEMBELAJARAN -->
+    <div id="page-tp" class="page-view">
+      <div class="page-title-badge">🎯 TUJUAN PEMBELAJARAN</div>
+      <div class="tp-card">
+        <ul class="tp-list">
+          <li class="tp-item">
+            <span class="tp-icon">1</span>
+            <span>Siswa mampu memahami definisi dan posisi bilangan bulat positif, nol, dan bilangan bulat negatif pada garis bilangan secara tepat.</span>
+          </li>
+          <li class="tp-item">
+            <span class="tp-icon">2</span>
+            <span>Siswa mampu membandingkan dua bilangan bulat menggunakan simbol pertidaksamaan (<strong>&lt;</strong>, <strong>&gt;</strong>, atau <strong>=</strong>) dengan benar.</span>
+          </li>
+          <li class="tp-item">
+            <span class="tp-icon">3</span>
+            <span>Siswa mampu mengurutkan sekelompok bilangan bulat dari nilai terkecil ke terbesar atau sebaliknya.</span>
+          </li>
+          <li class="tp-item">
+            <span class="tp-icon">4</span>
+            <span>Siswa mampu menyelesaikan masalah kontekstual kehidupan sehari-hari yang berkaitan dengan perbandingan bilangan bulat (misal: suhu udara, kedalaman laut).</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PAGE 4: MATERI INTI -->
+    <div id="page-materi" class="page-view">
+      <div class="page-title-badge">📖 EKSPLORASI MATERI</div>
+      <div class="materi-grid">
+        <div class="materi-card">
+          <div class="materi-header">
+            <span class="materi-badge">KONSEP 1</span>
+            <span class="materi-title">Pengertian Bilangan Bulat</span>
+          </div>
+          <div class="materi-body">
+            Bilangan bulat terdiri dari <strong>bilangan bulat positif</strong> (1, 2, 3...), <strong>nol (0)</strong>, dan <strong>bilangan bulat negatif</strong> (-1, -2, -3...).
+          </div>
+          <div class="materi-example">
+            Contoh: Suhu 5°C di bawah nol ditulis <strong>-5°C</strong>.
+          </div>
+        </div>
+
+        <div class="materi-card">
+          <div class="materi-header">
+            <span class="materi-badge">KONSEP 2</span>
+            <span class="materi-title">Garis Bilangan</span>
+          </div>
+          <div class="materi-body">
+            Pada garis bilangan horizontal:
+            • Semakin ke <strong>KANAN</strong>, nilai bilangan semakin <strong>BESAR</strong>.
+            • Semakin ke <strong>KIRI</strong>, nilai bilangan semakin <strong>KECIL</strong>.
+          </div>
+          <div class="materi-example">
+            Ingat: Nilai -2 terletak di sebelah kanan -5, maka -2 &gt; -5.
+          </div>
+        </div>
+
+        <div class="materi-card">
+          <div class="materi-header">
+            <span class="materi-badge">KONSEP 3</span>
+            <span class="materi-title">Simbol Perbandingan</span>
+          </div>
+          <div class="materi-body">
+            Gunakan simbol berikut:
+            • <strong>&gt;</strong> (lebih besar dari)
+            • <strong>&lt;</strong> (lebih kecil dari)
+            • <strong>=</strong> (sama dengan)
+          </div>
+          <div class="materi-example">
+            4 &gt; -10 | -7 &lt; -3 | -15 &lt; 0
+          </div>
+        </div>
+
+        <div class="materi-card">
+          <div class="materi-header">
+            <span class="materi-badge">KONSEP 4</span>
+            <span class="materi-title">Trik Membandingkan</span>
+          </div>
+          <div class="materi-body">
+            1. Positif selalu LEBIH BESAR dari Negatif.
+            2. Sama-sama negatif: Angka tanpa tanda minus yang lebih besar, justru bernilai LEBIH KECIL.
+          </div>
+          <div class="materi-example">
+            Bandingkan -50 dan -10: Karena 10 &lt; 50, maka <strong>-10 &gt; -50</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 5: SIMULASI INTERAKTIF -->
+    <div id="page-simulasi" class="page-view">
+      <div class="page-title-badge">🕹️ LABORATORIUM GARIS BILANGAN</div>
+      <div class="sim-container">
+        <!-- SVG Canvas -->
+        <svg class="svg-canvas" viewBox="0 0 800 240" id="sim-svg">
+          <!-- Main Line -->
+          <line x1="50" y1="120" x2="750" y2="120" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+          <!-- Arrows -->
+          <polyline points="60,110 40,120 60,130" fill="none" stroke="#475569" stroke-width="5"/>
+          <polyline points="740,110 760,120 740,130" fill="none" stroke="#475569" stroke-width="5"/>
+
+          <!-- Ticks & Labels dynamically generated or static for -5 to 5 -->
+          <!-- Generated via JS for flexibility -->
+          <g id="svg-ticks"></g>
+          
+          <!-- Interactive Markers -->
+          <g id="svg-marker-a" transform="translate(250, 120)">
+            <circle r="16" fill="#ef4444" stroke="#ffffff" stroke-width="3"/>
+            <text y="-25" text-anchor="middle" font-weight="900" font-size="16" fill="#ef4444">A</text>
+          </g>
+
+          <g id="svg-marker-b" transform="translate(550, 120)">
+            <circle r="16" fill="#3b82f6" stroke="#ffffff" stroke-width="3"/>
+            <text y="-25" text-anchor="middle" font-weight="900" font-size="16" fill="#3b82f6">B</text>
+          </g>
+
+          <!-- Pill Badge Result -->
+          <g transform="translate(400, 40)">
+            <rect x="-140" y="-20" width="280" height="40" rx="20" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+            <text id="svg-result-text" y="6" text-anchor="middle" font-weight="800" font-size="16" fill="#1e3a8a">
+              -3 &lt; 3 (A di kiri B)
+            </text>
+          </g>
+        </svg>
+
+        <div class="sim-controls">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span font-weight="800" style="color:#ef4444; font-weight:800;">Titik A (Merah):</span>
+            <button class="sim-btn sim-btn-red" onclick="movePoint('a', -1)">-1</button>
+            <span id="val-a" style="font-weight:800; font-size:16px;">-3</span>
+            <button class="sim-btn sim-btn-red" onclick="movePoint('a', 1)">+1</button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px; margin-left:20px;">
+            <span style="color:#3b82f6; font-weight:800;">Titik B (Biru):</span>
+            <button class="sim-btn sim-btn-blue" onclick="movePoint('b', -1)">-1</button>
+            <span id="val-b" style="font-weight:800; font-size:16px;">3</span>
+            <button class="sim-btn sim-btn-blue" onclick="movePoint('b', 1)">+1</button>
+          </div>
+        </div>
+
+        <div class="sim-feedback" id="sim-explanation">
+          Posisi <strong>-3</strong> terletak di sebelah KIRI <strong>3</strong>, maka <strong>-3 &lt; 3</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 6: EVALUASI MULTI-FORMAT -->
+    <div id="page-evaluasi" class="page-view">
+      <div class="page-title-badge">📝 EVALUASI FORMATIF</div>
+      <div class="eval-stage">
+        <div class="eval-header">
+          <div class="eval-title" id="eval-step-title">Babak A: Pilihan Ganda (30 Poin)</div>
+          <div class="eval-score-badge">Skor Total: <span id="current-score">0</span> / 100</div>
+        </div>
+
+        <!-- BABAK A: PILIHAN GANDA -->
+        <div id="eval-babak-a" style="display:block; height:100%;">
+          <p id="qa-question" style="font-size: clamp(14px, 1.9vh, 17px); font-weight:700; margin: 12px 0;">
+            1. Tanda perbandingan yang tepat untuk mengisi -8 ... -3 adalah?
+          </p>
+          <div class="quiz-options" id="qa-options">
+            <!-- Dynamic Options -->
+          </div>
+        </div>
+
+        <!-- BABAK B: MENJODOHKAN GARIS SVG -->
+        <div id="eval-babak-b" style="display:none; height:100%;">
+          <p style="font-size: 13px; font-weight:700; color:#64748b; margin-bottom:8px;">
+            Klik 1 Kartu di Kiri lalu Klik Pasangannya di Kanan! (40 Poin)
+          </p>
+          <div class="matching-container">
+            <div class="match-column" id="match-left">
+              <div class="match-card" onclick="selectMatch('left', 0, this)">-12 ... -5</div>
+              <div class="match-card" onclick="selectMatch('left', 1, this)">0 ... -20</div>
+              <div class="match-card" onclick="selectMatch('left', 2, this)">Suhu -4°C dibanding -1°C</div>
+              <div class="match-card" onclick="selectMatch('left', 3, this)"> Urutan terkecil: -3, 2, -8</div>
+            </div>
+
+            <svg class="match-svg" id="match-svg-canvas"></svg>
+
+            <div class="match-column" id="match-right">
+              <div class="match-card" onclick="selectMatch('right', 1, this)">&gt; (Lebih Besar)</div>
+              <div class="match-card" onclick="selectMatch('right', 0, this)">&lt; (Lebih Kecil)</div>
+              <div class="match-card" onclick="selectMatch('right', 3, this)">-8, -3, 2</div>
+              <div class="match-card" onclick="selectMatch('right', 2, this)">Lebih Dingin</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BABAK C: BENAR / SALAH -->
+        <div id="eval-babak-c" style="display:none; height:100%;">
+          <p id="tf-question" style="font-size: clamp(15px, 2.2vh, 18px); font-weight:700; margin: 20px 0; text-align:center;">
+            Pernyataan: "Bilangan -100 nilainya lebih besar daripada -5."
+          </p>
+          <div style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
+            <button class="sim-btn sim-btn-green" style="padding: 12px 30px; font-size:18px;" onclick="answerTF(true)">✓ BENAR</button>
+            <button class="sim-btn sim-btn-red" style="padding: 12px 30px; font-size:18px;" onclick="answerTF(false)">✗ SALAH</button>
+          </div>
+        </div>
+
+        <!-- BABAK D: HASIL -->
+        <div id="eval-babak-d" style="display:none; height:100%;">
+          <div class="result-box">
+            <div class="trophy-icon">🏆</div>
+            <h2 style="color:#1e3a8a;">Luar Biasa! Evaluasi Selesai</h2>
+            <div class="final-score" id="final-score-val">100</div>
+            <p id="final-feedback" style="font-weight:700; color:#475569;">Kamu sangat memahami materi perbandingan bilangan bulat!</p>
+            <button class="sim-btn sim-btn-blue" onclick="resetEvaluasi()" style="margin-top:10px;">🔄 Ulangi Evaluasi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 7: PROFIL GURU -->
+    <div id="page-profil" class="page-view">
+      <div class="page-title-badge">👨‍🏫 PROFIL GURU PENGEMBANG</div>
+      <div class="profile-card">
+        <img src="guru.jpg" alt="Foto Guru" class="profile-img" onerror="this.src='https://via.placeholder.com/150?text=FOTO+GURU'">
+        <div class="profile-info">
+          <h2>Nurul Komariyah, S.Pd</h2>
+          <h4>Guru Matematika — SMP Negeri 1 Sukorame</h4>
+          <p style="font-size: 13px; color: #64748b; font-weight:600; margin-bottom: 8px;">
+            Kabupaten Lamongan, Jawa Timur
+          </p>
+          <div class="profile-quote">
+            "Matematika bukan tentang menghafal rumus, melainkan tentang melatih pola pikir logis, kritis, dan pantang menyerah."
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- POPUP FAKTA MENARIK -->
+  <div class="modal-overlay" id="fakta-modal">
+    <div class="modal-box">
+      <h3>💡 Fakta Menarik Bilangan Bulat</h3>
+      <p>
+        Tahukah kamu? Konsep bilangan negatif pertama kali digunakan di Tiongkok kuno dan India untuk mencatat **Hutang** (diberi tanda negatif/merah) dan **Piutang/Keuntungan** (diberi tanda positif/hitam).<br><br>
+        Di dunia modern, bilangan bulat negatif digunakan untuk mengukur kedalaman bawah laut (misal: **-10.994 meter** di Palung Mariana) dan suhu ekstrem di Kutub Utara!
+      </p>
+      <button class="btn-close-modal" onclick="closeModal()">Tutup & Lanjutkan</button>
+    </div>
+  </div>
+
+  <script>
+    /* AUDIO SYNTHESIZER (WEB AUDIO API 100% OFFLINE) */
+    let audioCtx = null;
+    let isAudioOn = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function toggleAudio() {
+      isAudioOn = !isAudioOn;
+      document.getElementById('btn-audio').innerText = isAudioOn ? '🔊' : '🔇';
+    }
+
+    function playSfx(type) {
+      if (!isAudioOn) return;
+      initAudio();
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'click') {
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } else if (type === 'correct') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(180, now + 0.12);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else if (type === 'start') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    /* NAVIGATION LOGIC */
+    function navTo(pageId) {
+      playSfx('click');
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      const btnHome = document.getElementById('btn-home');
+      if (pageId === 'page-cover') {
+        btnHome.style.display = 'none';
+      } else {
+        btnHome.style.display = 'flex';
+      }
+
+      if (pageId === 'page-simulasi') renderSim();
+    }
+
+    /* ACCESSIBILITY ZOOM */
+    let currentScale = 1.0;
+    function adjustZoom(delta) {
+      currentScale = Math.max(0.85, Math.min(1.15, currentScale + delta));
+      document.getElementById('stage-16-9').style.setProperty('--font-scale', currentScale);
+      playSfx('click');
+    }
+
+    /* POPUP MODAL */
+    function openModal() {
+      playSfx('click');
+      document.getElementById('fakta-modal').style.display = 'flex';
+    }
+    function closeModal() {
+      playSfx('click');
+      document.getElementById('fakta-modal').style.display = 'none';
+    }
+
+    /* SIMULATION LOGIC */
+    let posA = -3;
+    let posB = 3;
+
+    function renderSimTicks() {
+      const g = document.getElementById('svg-ticks');
+      g.innerHTML = '';
+      for (let i = -6; i <= 6; i++) {
+        const x = 400 + i * 50;
+        g.innerHTML += `
+          <line x1="${x}" y1="112" x2="${x}" y2="128" stroke="#64748b" stroke-width="3"/>
+          <text x="${x}" y="152" text-anchor="middle" font-weight="700" font-size="14" fill="#334155">${i}</text>
+        `;
+      }
+    }
+
+    function movePoint(point, delta) {
+      playSfx('click');
+      if (point === 'a') posA = Math.max(-6, Math.min(6, posA + delta));
+      if (point === 'b') posB = Math.max(-6, Math.min(6, posB + delta));
+      renderSim();
+    }
+
+    function renderSim() {
+      renderSimTicks();
+      const xA = 400 + posA * 50;
+      const xB = 400 + posB * 50;
+
+      document.getElementById('svg-marker-a').setAttribute('transform', `translate(${xA}, 120)`);
+      document.getElementById('svg-marker-b').setAttribute('transform', `translate(${xB}, 120)`);
+
+      document.getElementById('val-a').innerText = posA;
+      document.getElementById('val-b').innerText = posB;
+
+      let symbol = '=';
+      let desc = 'bernilai SAMA DENGAN';
+      if (posA < posB) {
+        symbol = '<';
+        desc = `terletak di sebelah KIRI ${posB}, maka ${posA} LEBIH KECIL dari ${posB}`;
+      } else if (posA > posB) {
+        symbol = '>';
+        desc = `terletak di sebelah KANAN ${posB}, maka ${posA} LEBIH BESAR dari ${posB}`;
+      }
+
+      document.getElementById('svg-result-text').textContent = `${posA} ${symbol} ${posB}`;
+      document.getElementById('sim-explanation').innerHTML = `Posisi <strong>${posA}</strong> ${desc}.`;
+    }
+
+    /* EVALUATION SYSTEM (100 PTS) */
+    let totalScore = 0;
+    let currentQAIndex = 0;
+
+    const qaData = [
+      { q: "1. Tanda perbandingan yang tepat untuk -8 ... -3 adalah?", options: ["<", ">", "=", "≥"], correct: 0 },
+      { q: "2. Di antara bilangan berikut, manakah yang nilainya PALING KECIL?", options: ["-2", "0", "-15", "5"], correct: 2 },
+      { q: "3. Mana pernyataan berikut yang BENAR?", options: ["-5 > 2", "-10 > -4", "0 < -7", "-1 > -9"], correct: 3 }
+    ];
+
+    function loadQA() {
+      if (currentQAIndex >= qaData.length) {
+        // Move to Babak B
+        document.getElementById('eval-babak-a').style.display = 'none';
+        document.getElementById('eval-babak-b').style.display = 'block';
+        document.getElementById('eval-step-title').innerText = 'Babak B: Menjodohkan Garis (40 Poin)';
+        return;
+      }
+
+      const q = qaData[currentQAIndex];
+      document.getElementById('qa-question').innerText = q.q;
+      const optsContainer = document.getElementById('qa-options');
+      optsContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.innerText = `${String.fromCharCode(65+idx)}. ${opt}`;
+        btn.onclick = () => answerQA(idx);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function answerQA(selected) {
+      if (selected === qaData[currentQAIndex].correct) {
+        playSfx('correct');
+        totalScore += 10;
+      } else {
+        playSfx('wrong');
+      }
+      document.getElementById('current-score').innerText = totalScore;
+      currentQAIndex++;
+      loadQA();
+    }
+
+    /* BABAK B: MATCHING LOGIC */
+    let selectedLeft = null;
+    let selectedRight = null;
+    let matchesCount = 0;
+
+    function selectMatch(side, index, el) {
+      playSfx('click');
+      if (side === 'left') {
+        document.querySelectorAll('#match-left .match-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedLeft = { index, el };
+      } else {
+        document.querySelectorAll('#match-right .match-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedRight = { index, el };
+      }
+
+      if (selectedLeft !== null && selectedRight !== null) {
+        if (selectedLeft.index === selectedRight.index) {
+          playSfx('correct');
+          totalScore += 10;
+          selectedLeft.el.style.visibility = 'hidden';
+          selectedRight.el.style.visibility = 'hidden';
+          matchesCount++;
+        } else {
+          playSfx('wrong');
+          selectedLeft.el.classList.remove('selected');
+          selectedRight.el.classList.remove('selected');
+        }
+        document.getElementById('current-score').innerText = totalScore;
+        selectedLeft = null;
+        selectedRight = null;
+
+        if (matchesCount >= 4) {
+          setTimeout(() => {
+            document.getElementById('eval-babak-b').style.display = 'none';
+            document.getElementById('eval-babak-c').style.display = 'block';
+            document.getElementById('eval-step-title').innerText = 'Babak C: Benar / Salah (30 Poin)';
+            loadTF();
+          }, 500);
+        }
+      }
+    }
+
+    /* BABAK C: TRUE/FALSE LOGIC */
+    let tfIndex = 0;
+    const tfData = [
+      { q: 'Pernyataan 1: "Bilangan -100 nilainya LEBIH BESAR daripada -5."', ans: false },
+      { q: 'Pernyataan 2: "Suhu -2°C lebih hangat daripada suhu -8°C."', ans: true },
+      { q: 'Pernyataan 3: "Angka Nol (0) selalu lebih besar dari bilangan negatif apa pun."', ans: true }
+    ];
+
+    function loadTF() {
+      if (tfIndex >= tfData.length) {
+        // Finished All
+        document.getElementById('eval-babak-c').style.display = 'none';
+        document.getElementById('eval-babak-d').style.display = 'block';
+        document.getElementById('eval-step-title').innerText = 'Hasil Rekapitulasi Evaluasi';
+        document.getElementById('final-score-val').innerText = totalScore;
+        return;
+      }
+      document.getElementById('tf-question').innerText = tfData[tfIndex].q;
+    }
+
+    function answerTF(userAns) {
+      if (userAns === tfData[tfIndex].ans) {
+        playSfx('correct');
+        totalScore += 10;
+      } else {
+        playSfx('wrong');
+      }
+      document.getElementById('current-score').innerText = totalScore;
+      tfIndex++;
+      loadTF();
+    }
+
+    function resetEvaluasi() {
+      totalScore = 0;
+      currentQAIndex = 0;
+      matchesCount = 0;
+      tfIndex = 0;
+      document.getElementById('current-score').innerText = '0';
+      document.getElementById('eval-babak-d').style.display = 'none';
+      document.getElementById('eval-babak-a').style.display = 'block';
+      document.getElementById('eval-step-title').innerText = 'Babak A: Pilihan Ganda (30 Poin)';
+      
+      document.querySelectorAll('.match-card').forEach(el => {
+        el.style.visibility = 'visible';
+        el.classList.remove('selected');
+      });
+
+      loadQA();
+    }
+
+    // INIT
+    window.onload = () => {
+      renderSim();
+      loadQA();
+    };
+  </script>
+</body>
+</html>
